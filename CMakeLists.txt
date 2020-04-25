@@ -7,11 +7,13 @@ project(
     LANGUAGES CXX C
     )
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -ldl -lglfw")
-
 add_library(Shader src/Shader.cpp src/glad.c)
 target_include_directories(Shader PUBLIC include)
+target_link_libraries(Shader glfw)
 
 add_executable(main src/main.cpp src/glad.c)
 target_include_directories(main PUBLIC include)
 target_link_libraries(main Shader)
+target_link_libraries(main glfw)
+target_link_libraries(main dl)
+
