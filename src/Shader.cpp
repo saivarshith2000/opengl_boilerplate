@@ -42,6 +42,14 @@ void Shader::useShader()
     return ;
 }
 
+/* Set the uniform value in shader for type glm::mat4 */
+void Shader::setUniformMat4f(const char *uniform, glm::mat4 val)
+{
+    int uniformLocation = glGetUniformLocation(shaderProgram, uniform);
+    useShader();
+    glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, &val[0][0]);
+}
+
 /* Reads entire file and returns a string containing the file contents */
 std::string Shader::readFile(const char *filename)
 {

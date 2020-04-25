@@ -7,6 +7,9 @@
 #include <assert.h>
 #include <string>
 #include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 /* Class for operations related to Shaders */
 class Shader {
@@ -15,7 +18,7 @@ public:
     void useShader();
     /* void setUniformInt(); */
     /* void setUniformFloat(); */
-    /* void setUniformMat4f(); */
+    void setUniformMat4f(const char *uniform, glm::mat4 val);
 
 private:
     unsigned int shaderProgram;
