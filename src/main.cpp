@@ -10,19 +10,25 @@
 
 #include <Shader.h>
 
+void resize_callback(GLFWwindow *window, int width, int height);
+void process_input(GLFWwindow *window);
+
 const int SCRHEIGHT = 600;
 const int SCRWIDTH = 800;
 
-void resize_callback(GLFWwindow *window, int width, int height);
-void process_input(GLFWwindow *window);
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f,  3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f,  0.0f);
+float cameraSensitivity = 5.0f;   // base camera speed
+float deltaTime = 0.0f;	    // Time between current frame and last frame
+float lastFrame = 0.0f;     // Time of last frame
 
 int main()
 {
     /* OpenGL Initialisation */
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     GLFWwindow *window = glfwCreateWindow(SCRWIDTH, SCRHEIGHT, "OpenGL", 0, 0);
     assert(window != NULL);
     glfwMakeContextCurrent(window);
@@ -140,7 +146,13 @@ int main()
     shader.setUniformMat4f("view", view);
 
     /* Render Loop */
+    float currentFrame;
     while(!glfwWindowShouldClose(window)) {
+        /* calculate render time */
+        currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
         /* Process user input */
         process_input(window);
 
@@ -151,15 +163,19 @@ int main()
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        /* move camera */
+        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        shader.setUniformMat4f("view", view);
+
         /* Draw triangles */
         shader.useShader();
-		glBindTexture(GL_TEXTURE_2D, texture);
-		glBindVertexArray(VAO);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glBindVertexArray(VAO);
         for(unsigned int i = 0; i < 10; i++)
         {
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, cubePositions[i]);
-            float angle = glfwGetTime() * 20.0f * (1 + i);
+            float angle = currentFrame * 20.0f * (1 + i);
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
             shader.setUniformMat4f("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -181,7 +197,16 @@ void resize_callback(GLFWwindow *window, int width, int height)
 
 void process_input(GLFWwindow *window)
 {
+    float cameraSpeed = cameraSensitivity * deltaTime;
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, 1);
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        cameraPos += cameraSpeed * cameraFront;
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        cameraPos -= cameraSpeed * cameraFront;
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
     return ;
 }
