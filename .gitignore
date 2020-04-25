@@ -1,5 +1,6 @@
 # LSP files
 .ccls
+.ccls-cache/
 
 # CMake build directory
 build/

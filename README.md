@@ -13,13 +13,14 @@ This repository is intended to be a cross-platform boiler plate code for OpenGl 
 3. Shader - load and use shaders
 
 #### How to run
-1. use the utility script. `sh util.sh` to clean build
-2. `sh util.sh run` to the run the application
-3. `sh util.sh build` to build with existing build files.
-4. `sh utils.sh clean` to remove the build directory
+1. Use the utility script. `chmod +x util.sh` to make the script executable.
+2. `sh util.sh` to clean build.
+3. `sh util.sh run` to the run the application.
+4. `sh util.sh build` to build with existing build files.
+5. `sh utils.sh clean` to remove the build directory.
 
 #### Structure
-src - C++ code
+src - C++ source
 include - external header files and project header files
 shaders - vertex and fragment shaders
-
+build - contains build files and main executable.
