@@ -1,4 +1,4 @@
-#include <Shader.h>
+#include <Shader.hpp>
 
 /* Constructor for Shader Class. It reads the shader source files, compiles
  * the shaders, creates and links the shader program. It any error occurs,
