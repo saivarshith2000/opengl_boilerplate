@@ -15,6 +15,7 @@ void resize_callback(GLFWwindow *window, int width, int height);
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 void process_input(GLFWwindow *window);
+unsigned int loadTexture(const char *filepath);
 
 const int SCRHEIGHT = 720;
 const int SCRWIDTH = 1280;
@@ -99,19 +100,8 @@ int main() {
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    /* Textures */
-    int width, height, nChannels;
-    unsigned char *data = stbi_load("./assets/container.jpg", &width, &height, &nChannels, 0);
-    unsigned int texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    stbi_image_free(data);
+    /* texture */
+    unsigned int texture = loadTexture("./assets/container.jpg");
 
     /* Shaders */
     Shader shader("./shaders/vertex.glsl", "./shaders/fragment.glsl");
@@ -166,6 +156,29 @@ int main() {
 
     glfwTerminate();
     return 0;
+}
+
+unsigned int loadTexture(const char *filepath)
+{
+    int width, height, nChannels;
+    GLint format;
+    unsigned char *data = stbi_load("./assets/container.jpg", &width, &height, &nChannels, 0);
+    assert(data != NULL);
+    assert(nChannels < 4);
+    if(nChannels == 1)format = GL_RED;
+    else if(nChannels == 3)format = GL_RGB;
+    else if (nChannels == 4)format = GL_RGBA;
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    stbi_image_free(data);
+    return texture;
 }
 
 void resize_callback(GLFWwindow *window, int width, int height) { glViewport(0, 0, width, height); }

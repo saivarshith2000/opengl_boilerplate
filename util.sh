@@ -2,7 +2,7 @@
 # simple shell script to clean build
 case "$1" in
     "")
-        make "Performing Clean Build"
+        echo "Performing Clean Build"
         rm -rf build
         echo "Removed existing build directory"
         mkdir build
