@@ -1,0 +1,32 @@
+[
+{
+  "directory": "/home/sai/Projects/opengl_boilerplate/build",
+  "command": "/usr/bin/c++   -I/home/sai/Projects/opengl_boilerplate/include    -o CMakeFiles/main.dir/src/main.cpp.o -c /home/sai/Projects/opengl_boilerplate/src/main.cpp",
+  "file": "/home/sai/Projects/opengl_boilerplate/src/main.cpp"
+},
+{
+  "directory": "/home/sai/Projects/opengl_boilerplate/build",
+  "command": "/usr/bin/cc  -I/home/sai/Projects/opengl_boilerplate/include    -o CMakeFiles/main.dir/src/glad.c.o   -c /home/sai/Projects/opengl_boilerplate/src/glad.c",
+  "file": "/home/sai/Projects/opengl_boilerplate/src/glad.c"
+},
+{
+  "directory": "/home/sai/Projects/opengl_boilerplate/build",
+  "command": "/usr/bin/c++   -I/home/sai/Projects/opengl_boilerplate/include    -o CMakeFiles/Camera.dir/src/Camera.cpp.o -c /home/sai/Projects/opengl_boilerplate/src/Camera.cpp",
+  "file": "/home/sai/Projects/opengl_boilerplate/src/Camera.cpp"
+},
+{
+  "directory": "/home/sai/Projects/opengl_boilerplate/build",
+  "command": "/usr/bin/cc  -I/home/sai/Projects/opengl_boilerplate/include    -o CMakeFiles/Camera.dir/src/glad.c.o   -c /home/sai/Projects/opengl_boilerplate/src/glad.c",
+  "file": "/home/sai/Projects/opengl_boilerplate/src/glad.c"
+},
+{
+  "directory": "/home/sai/Projects/opengl_boilerplate/build",
+  "command": "/usr/bin/c++   -I/home/sai/Projects/opengl_boilerplate/include    -o CMakeFiles/Shader.dir/src/Shader.cpp.o -c /home/sai/Projects/opengl_boilerplate/src/Shader.cpp",
+  "file": "/home/sai/Projects/opengl_boilerplate/src/Shader.cpp"
+},
+{
+  "directory": "/home/sai/Projects/opengl_boilerplate/build",
+  "command": "/usr/bin/cc  -I/home/sai/Projects/opengl_boilerplate/include    -o CMakeFiles/Shader.dir/src/glad.c.o   -c /home/sai/Projects/opengl_boilerplate/src/glad.c",
+  "file": "/home/sai/Projects/opengl_boilerplate/src/glad.c"
+}
+]

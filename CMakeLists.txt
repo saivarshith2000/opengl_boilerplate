@@ -7,6 +7,9 @@ project(
     LANGUAGES CXX C
     )
 
+# For ccls auto-completion and intellisense
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Shader Library
 add_library(Shader src/Shader.cpp src/glad.c)
 target_include_directories(Shader PUBLIC include)

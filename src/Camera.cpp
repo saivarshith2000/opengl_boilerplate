@@ -1,76 +1,74 @@
 #include <Camera.hpp>
 
-Camera::Camera()
+/* Constructor to initiate default values */
+Camera::Camera(float movementSens, float lookSens, float initX, float initY)
 {
-    position = glm::vec3(0.0f, 0.0f, 0.0f);
-    front = glm::vec3(0.0f, 0.0f, -1.0f);
-    up = glm::vec3(0.0f, 1.0f, 0.0f);
-    worldUp = up;
-    yaw = YAW;
-    pitch = PITCH;
-    movementSens = MOVEMENT_SENS;
-    cameraSens = CAMERA_SENS;
-    fov = FOV;
-    return ;
+    cameraPos = glm::vec3(0.0f, 2.5f, 2.0f);
+    globalUp = glm::vec3(0.0f, 1.0f, 0.0f);
+    cameraDirection = glm::vec3(0.0f, 0.0f, -1.0f);
+    this->movementSens = movementSens;
+    this->lookSens = lookSens;
+    firstCapture = 0;
+    lastX = initX;
+    lastY = initY;
+    xoffset = yoffset = 0;
+    yaw = -90.0f;
+    pitch = 0.0f;
 }
 
-/* Returns the view matrix w.r.t the camera */
-glm::mat4 Camera::getViewMatrix()
+/* Sets the frame time */
+void Camera::setDelta(float deltaTime)
 {
-    return glm::lookAt(position, position + front, up);
+    this->deltaTime = deltaTime;
 }
 
-/* Update euler angles and front vector */
-void Camera::updateCameraVectors()
-{
-    glm::vec3 new_front;
-    new_front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    new_front.y = sin(glm::radians(pitch));
-    new_front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    front = glm::normalize(new_front);
-    right = glm::normalize(glm::cross(front, worldUp));
-    up = glm::normalize(glm::cross(right, front));
+
+/* returns the lookat matrix */
+glm::mat4 Camera::lookAt() {
+    // cameraDirection = glm::normalize(cameraTarget - cameraPos);
+    return glm::lookAt(cameraPos, cameraPos + cameraDirection, globalUp);
 }
 
-/* proces input from keyboard */
-void Camera::processKeyboardInput(CameraMovement direction, float deltaTime)
-{
-    float speed = deltaTime * movementSens;
-    if (direction == FORWARD)
-        position += front * speed;
-    if (direction == BACKWARD)
-        position -= front * speed;
-    if (direction == LEFT)
-        position -= right * speed;
-    if (direction == RIGHT)
-        position += right * speed;
-    return ;
+/* Handles keyboard input and moves camera accordingly */
+void Camera::handleKeyboard(enum CameraMovement dir) {
+    float sens = movementSens * deltaTime;
+    switch (dir) {
+    case FORWARD:
+        cameraPos += cameraDirection * sens;
+        break;
+    case BACKWARD:
+        cameraPos -= cameraDirection * sens;
+        break;
+    case LEFT:
+        cameraPos -= glm::normalize(glm::cross(cameraDirection, globalUp)) * sens;
+        break;
+    case RIGHT:
+        cameraPos += glm::normalize(glm::cross(cameraDirection, globalUp)) * sens;
+    }
+    return;
 }
 
-/* process mouse input */
-void Camera::processMouseInput(float xoffset, float yoffset, GLboolean constrainPitch = true)
+/* Handles mouse input */
+void Camera::handleMouse(float xpos, float ypos)
 {
-    xoffset *= cameraSens;
-    yoffset *= cameraSens;
+    if(firstCapture) {
+        lastX = xpos;
+        lastY = xpos;
+        firstCapture = 0;
+    }
+    float sens = lookSens * deltaTime;
+    xoffset = xpos - lastX;
+    yoffset = -ypos + lastY;
+    xoffset *= sens;
+    yoffset *= sens;
+    lastX = xpos;
+    lastY = ypos;
     yaw += xoffset;
     pitch += yoffset;
-    if(constrainPitch) {
-        if(pitch > 89.0f)
-            pitch = 89.0f;
-        if(pitch < -89.0f)
-            pitch = -89.0f;
-    }
-    updateCameraVectors();
-}
-
-/* Process mouse scroll */
-void Camera::processMouseScroll(float yoffset)
-{
-    if(fov >= 1.0f && fov <= 45.0f)
-        fov -= yoffset;
-    else if(fov < 1.0f)
-        fov = 1.0f;
-    else if(fov > 45.0f)
-        fov = 45.0f;
+    pitch = (pitch > 89.0f) ? 89.0f : pitch;
+    cameraDirection.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    cameraDirection.y = sin(glm::radians(pitch));
+    cameraDirection.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    cameraDirection = glm::normalize(cameraDirection);
     return ;
 }

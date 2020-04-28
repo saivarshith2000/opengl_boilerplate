@@ -2,7 +2,7 @@
 # simple shell script to clean build
 case "$1" in
     "")
-        echo "Performing Clean Build"
+        make "Performing Clean Build"
         rm -rf build
         echo "Removed existing build directory"
         mkdir build
@@ -10,6 +10,7 @@ case "$1" in
         cmake ..
         make
         cd ..
+        cp compile_commands.json ../
         exit 0
         ;;
     "run")
@@ -17,7 +18,7 @@ case "$1" in
         ./build/main
         exit 0
         ;;
-    "build")
+    "make")
         cd build
         make
         cd ..
@@ -30,7 +31,7 @@ case "$1" in
         exit 0
         ;;
     *)
-        echo "Usage: sh buildscript.sh [run/build]"
+        echo "Usage: sh buildscript.sh [run/make]"
         exit 1
         ;;
 esac
