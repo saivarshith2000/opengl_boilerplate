@@ -15,6 +15,11 @@ add_library(Shader src/Shader.cpp src/glad.c)
 target_include_directories(Shader PUBLIC include)
 target_link_libraries(Shader glfw)
 
+# Mesh Library
+add_library(Mesh src/Mesh.cpp src/glad.c)
+target_include_directories(Mesh PUBLIC include)
+target_link_libraries(Mesh Shader)
+
 # Camera Library
 add_library(Camera src/Camera.cpp src/glad.c)
 target_include_directories(Camera PUBLIC include)
@@ -23,7 +28,4 @@ target_link_libraries(Camera glfw)
 # Main
 add_executable(main src/main.cpp src/glad.c)
 target_include_directories(main PUBLIC include)
-target_link_libraries(main Shader)
-target_link_libraries(main Camera)
-target_link_libraries(main glfw)
-target_link_libraries(main dl)
+target_link_libraries(main Shader Mesh Camera glfw dl)

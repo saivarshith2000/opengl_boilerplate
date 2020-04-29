@@ -1,38 +1,48 @@
-#ifndef CAMERA_H
-#define CAMERA_H
+#pragma once
+#ifndef CAMERA_H_
+#define CAMERA_H_
 
-#include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <glm/gtc/quaternion.hpp>
 
-/* Camera movement directions */
-enum CameraMovement { FORWARD, BACKWARD, LEFT, RIGHT };
-
-class Camera {
-public:
-    float movementSens;
-    float lookSens;
-    float deltaTime;
-    glm::vec3 cameraDirection;
-    glm::vec3 cameraTarget;
-    glm::vec3 cameraPos;
-    glm::vec3 globalUp;
-    Camera(float movementSens, float lookSens, float initX, float initY);
-    glm::mat4 lookAt();
-    void setDelta(float deltaTime);
-    void handleKeyboard(enum CameraMovement dir);
-    void handleMouse(float xpos, float ypos);
-
-private:
-    float xoffset;
-    float yoffset;
-    float lastX;
-    float lastY;
-    float firstCapture;
-    float yaw;
-    float pitch;
+enum movementDirection {
+    FORWARD,
+    BACKWARD,
+    LEFT,
+    RIGHT,
+    ROTATE_CLOCK,
+    ROTATE_ANTICLOCK
 };
 
-#endif // CAMERA_H
+class Camera{
+public:
+    glm::vec3 cameraPos;
+    glm::vec3 cameraUp;
+    glm::vec3 cameraRight;
+    glm::quat cameraQuat;
+    glm::vec3 worldUp;
+    float fov;
+    Camera(glm::vec3 cameraPos, glm::vec3 cameraDir, glm::vec3 worldUp, 
+                float movementSens, float mouseSens, float aspect);
+    void setDelta(float deltaTime);
+    glm::mat4 getProjectionMatrix();
+    glm::mat4 getViewMatrix();
+    void handleKeyboard(enum movementDirection dir);
+    void handleMouse(double xpos, double ypos);
+    void handleScroll(double yoffset);
+    glm::vec3 getCameraDir();
+
+private:
+    float deltaTime;
+    float movementSens;
+    float mouseSens;
+    float aspect;
+    float lastX,lastY,xoffset, yoffset;
+    bool firstCapture;
+    void updateCameraVectors();
+};
+
+
+#endif // CAMERA_H_

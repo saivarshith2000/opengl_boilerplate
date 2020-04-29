@@ -1,74 +1,105 @@
 #include <Camera.hpp>
+#include <iostream>
 
-/* Constructor to initiate default values */
-Camera::Camera(float movementSens, float lookSens, float initX, float initY)
+/* Constructor for the camera class */
+Camera::Camera(glm::vec3 cameraPos, glm::vec3 cameraDir, glm::vec3 worldUp,
+                float movementSens, float mouseSens, float aspect)
 {
-    cameraPos = glm::vec3(0.0f, 2.5f, 2.0f);
-    globalUp = glm::vec3(0.0f, 1.0f, 0.0f);
-    cameraDirection = glm::vec3(0.0f, 0.0f, -1.0f);
+    this->cameraPos = cameraPos;
+    this->worldUp = worldUp;
+    this->cameraUp = worldUp;
     this->movementSens = movementSens;
-    this->lookSens = lookSens;
-    firstCapture = 0;
-    lastX = initX;
-    lastY = initY;
-    xoffset = yoffset = 0;
-    yaw = -90.0f;
-    pitch = 0.0f;
+    this->mouseSens = mouseSens;
+    this->aspect = aspect;
+    cameraQuat = glm::angleAxis(glm::radians(180.0f), cameraDir);
+    fov = 45.0f;
+    firstCapture = false;
+    updateCameraVectors();
 }
 
-/* Sets the frame time */
+/* Keyboard movement handling */
+void Camera::handleKeyboard(enum movementDirection dir)
+{
+    float sens = movementSens * deltaTime;
+    glm::vec3 cameraDir = getCameraDir();
+    switch(dir){
+        case FORWARD:
+            cameraPos += cameraDir * sens;
+            break;
+        case BACKWARD:
+            cameraPos -= cameraDir * sens;
+            break;
+        case LEFT:
+            cameraPos -= cameraRight * sens;
+            break;
+        case RIGHT:
+            cameraPos += cameraRight * sens;
+            break;
+        // case ROTATE_CLOCK:
+        //     cameraQuat = glm::angleAxis(glm::radians(0.003f), cameraDir);
+        //     updateCameraVectors();
+        //     break;
+        // case ROTATE_ANTICLOCK:
+        //     cameraQuat = glm::angleAxis(glm::radians(0.003f), -cameraDir);
+        //     updateCameraVectors();
+            break;
+    }
+}
+
+/* Handle Mouse movement */
+void Camera::handleMouse(double xpos, double ypos)
+{
+    if(firstCapture) {
+        firstCapture = false;
+        lastX = xpos;
+        lastY = ypos;
+    }
+    float sens = mouseSens * deltaTime;
+    xoffset = (xpos - lastX) * sens;
+    yoffset = (lastY - ypos) * sens;
+    lastX = xpos;
+    lastY = ypos;
+    glm::quat pitchQuat = glm::quat(glm::radians(-yoffset), cameraRight);
+    glm::quat yawQuat = glm::quat(glm::radians(-xoffset), cameraUp);
+    cameraQuat = glm::conjugate(glm::normalize(pitchQuat * yawQuat));
+    updateCameraVectors();
+}
+
+/* Handles scroll input */
+void Camera::handleScroll(double yoffset)
+{
+    if(yoffset > 0 && fov == 90)return ;
+    if(yoffset < 0 && fov == 10)return ;
+    fov -= yoffset;
+}
+
+/* Returns the projection matrix */
+glm::mat4 Camera::getProjectionMatrix()
+{
+    return glm::perspective(glm::radians(fov), aspect, 0.1f, 100.f);
+}
+
+/* Returns the view matrix */
+glm::mat4 Camera::getViewMatrix()
+{
+    return glm::lookAt(cameraPos, cameraPos + getCameraDir(), cameraUp);
+}
+
+/* Returns the camera direction vector */
+glm::vec3 Camera::getCameraDir() 
+{
+    return glm::normalize(glm::axis(cameraQuat));
+}
+
+/* set the deltaTime for smoothing movement */
 void Camera::setDelta(float deltaTime)
 {
     this->deltaTime = deltaTime;
 }
 
-
-/* returns the lookat matrix */
-glm::mat4 Camera::lookAt() {
-    // cameraDirection = glm::normalize(cameraTarget - cameraPos);
-    return glm::lookAt(cameraPos, cameraPos + cameraDirection, globalUp);
-}
-
-/* Handles keyboard input and moves camera accordingly */
-void Camera::handleKeyboard(enum CameraMovement dir) {
-    float sens = movementSens * deltaTime;
-    switch (dir) {
-    case FORWARD:
-        cameraPos += cameraDirection * sens;
-        break;
-    case BACKWARD:
-        cameraPos -= cameraDirection * sens;
-        break;
-    case LEFT:
-        cameraPos -= glm::normalize(glm::cross(cameraDirection, globalUp)) * sens;
-        break;
-    case RIGHT:
-        cameraPos += glm::normalize(glm::cross(cameraDirection, globalUp)) * sens;
-    }
-    return;
-}
-
-/* Handles mouse input */
-void Camera::handleMouse(float xpos, float ypos)
+void Camera::updateCameraVectors()
 {
-    if(firstCapture) {
-        lastX = xpos;
-        lastY = xpos;
-        firstCapture = 0;
-    }
-    float sens = lookSens * deltaTime;
-    xoffset = xpos - lastX;
-    yoffset = -ypos + lastY;
-    xoffset *= sens;
-    yoffset *= sens;
-    lastX = xpos;
-    lastY = ypos;
-    yaw += xoffset;
-    pitch += yoffset;
-    pitch = (pitch > 89.0f) ? 89.0f : pitch;
-    cameraDirection.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    cameraDirection.y = sin(glm::radians(pitch));
-    cameraDirection.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    cameraDirection = glm::normalize(cameraDirection);
-    return ;
+    glm::vec3 cameraDir = glm::normalize(glm::axis(cameraQuat));
+    cameraRight = glm::normalize(glm::cross(cameraDir, worldUp));
+    cameraUp = glm::normalize(glm::cross(cameraRight, cameraDir));
 }

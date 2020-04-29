@@ -1,3 +1,4 @@
+#pragma once
 #ifndef SHADER_H_
 #define SHADER_H_
 
@@ -16,8 +17,9 @@ class Shader {
 public:
     Shader(const char *vertexSourceName, const char *fragmentSourceName);
     void useShader();
-    /* void setUniformInt(); */
-    /* void setUniformFloat(); */
+    void setUniformInt(const char *uniform, int val);
+    void setUniformFloat(const char *uniform, float val);
+    void setUniformVec3(const char *uniform, glm::vec3 val);
     void setUniformMat4f(const char *uniform, glm::mat4 val);
 
 private:
@@ -26,6 +28,5 @@ private:
     int checkCompileError(unsigned int shader);
     int checkLinkError();
 };
-
 
 #endif // SHADER_H_
