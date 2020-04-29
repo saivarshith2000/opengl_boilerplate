@@ -5,11 +5,15 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
+#ifndef STBI_INCLUDE_STB_IMAGE_H
+#define STBI_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+#endif
 #include <vertexData.h>
 #include <Shader.hpp>
 #include <Camera.hpp>
 #include <Mesh.hpp>
+#include <Model.hpp>
 
 #define SCRWIDTH 800
 #define SCRHEIGHT 600

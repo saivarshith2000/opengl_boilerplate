@@ -21,9 +21,9 @@ public:
     void setUniformFloat(const char *uniform, float val);
     void setUniformVec3(const char *uniform, glm::vec3 val);
     void setUniformMat4f(const char *uniform, glm::mat4 val);
+    unsigned int shaderProgram;
 
 private:
-    unsigned int shaderProgram;
     std::string readFile(const char *filename);
     int checkCompileError(unsigned int shader);
     int checkLinkError();
